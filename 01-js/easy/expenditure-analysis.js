@@ -51,27 +51,30 @@ const transactions = [
 ];
 
 function calculateTotalSpentByCategory(transactions) {
-    let store = []
-    let op = {}
-    transactions.map((element) => {
-      store.forEach((item) => {
-        if (item.category == element.category) {
-          op = {
-            category: category,
-            totalSpent: item.price + element.price
-          }
-        }else {
-          op = {
-            category: category,
-            totalSpent: element.price
-          }
-        }
-        store.push(op)
-      })
-    })
-    console.log(store);
-    console.log(transactions);
-  }
+    // let result = []
+    // let obj = {}
+
+    const result = transactions.reduce((obj, curr) => {
+      const category = curr.category
+      const price = curr.price
+
+      if(obj[category]) {
+        obj[category] += price
+      }else {
+        obj[category] = price
+      }
+
+      return obj
+    }, {})
+    
+    // for(const element in obj) {
+    //   result.push({category: element, totalSpent: obj[element]})
+    // }
+
+    // console.log(result);
+    return Object.keys(result).map(category => ({ category, totalSpent: result[category] }));
+    // return Object.keys(result)
+}
 
 calculateTotalSpentByCategory(transactions)
-// module.exports = calculateTotalSpentByCategory;
+module.exports = calculateTotalSpentByCategory;
