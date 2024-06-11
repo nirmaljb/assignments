@@ -17,5 +17,34 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
+const directory = path.join(__dirname, '/files')
+
+app.get('/files', (req, res) => {
+  fs.readdir(directory, (err, files) => {
+    if(err) {
+      return res.status(500).json({
+        msg: 'Internal Server Error'
+      })
+    }
+    res.status(200).json(files)
+  })
+})
+
+app.get('/file/:filename', (req, res) => {
+  const filename = req.params.filename
+  console.log(filename);
+  fs.readFile(`${directory}/${filename}`, 'utf-8', (err, data) => {
+    if(err && err.code === 'ENOENT') {
+      return res.status(404).send('File not found')
+    }
+    res.status(200).send(data)
+  }) 
+})
+
+app.get('*', (req, res) => {
+  res.status(404).send("Route not found")
+})
+// app.listen(3000)
+
 
 module.exports = app;
