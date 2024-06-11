@@ -41,32 +41,34 @@
  */
 const express = require('express');
 const bodyParser = require('body-parser');
+const fs = require('fs')
+const path = require('path')
 
 const app = express();
 
 app.use(bodyParser.json());
 
-const todos = [
-  // {id: 1, title: "Grocery", description: "Buy milk curtain", completed: false},
-  // {id: 2, title: "Shopping", description: "Buy a new pair of t-shirt", completed: false},
-  // {id: 3, title: "Shopping", description: "Buy ration", completed: false},
-]
+const directory = path.join(__dirname, 'todos.json')
 
 app.get('/todos', (req, res) => {
-  res.status(200).json(todos)
+  fs.readFile(directory, 'utf8', (err, data) => {
+    const todos = JSON.parse(data)
+    res.status(200).json(todos)
+  })
 })
 
 app.get('/todos/:id', (req, res) => {
   const searchID = parseInt(req.params.id)
-  // console.log(typeof searchID);
-  const item = todos.filter((todo) => todo.id === searchID)
-  // console.log(item);
+  fs.readFile(directory, 'utf8', (err, data) => {
+    const todos = JSON.parse(data)
+    const item = todos.filter((todo) => todo.id === searchID)
 
-  if (item.length === 0) {
-    res.status(404).json({})
-  }else {
-    res.status(200).json(item[0])
-  }
+    if (item.length === 0) {
+      res.status(404).json({msg: 'todo not found'})
+    }else {
+      res.status(200).json(item[0])
+    }
+  })
 })
 
 app.post('/todos', (req, res) => {
@@ -74,56 +76,74 @@ app.post('/todos', (req, res) => {
   const title = req.body.title
   const description = req.body.description
   const completed = req.body.completed
-
+  
   const todo = {id, title, description, completed}
-  // console.log(todo);
-  todos.push(todo)
-
-  res.status(201).json(todo)
-
+  let todos = []
+  fs.readFile(directory, 'utf8', (err, data) => {
+    todos = JSON.parse(data)
+    todos.push(todo)
+    const jsonTodo = JSON.stringify(todos)
+    
+    fs.writeFile(directory, jsonTodo, (err) => {
+      if(err) throw err;
+      res.status(201).json(todo)
+    })
+  })
 })
 
 app.put('/todos/:id', (req, res) => {
   const searchID = parseInt(req.params.id)
-  const title = req.body.title
-  const description = req.body.description
-  const completed = req.body.completed
   
-  const newTodo = {id: searchID, title, description, completed}
-  console.log(newTodo);
-  
-  const findElement = (element) => element.id === searchID
-  const idx = todos.findIndex(findElement)
-  console.log(idx);
-  if(idx === -1) {
-    res.status(404).json({
-      msg: 'Todo not found' 
-    })
-  }else {
-    todos.splice(idx, 1, newTodo)
-    // console.log(todos);
-    res.status(200).json(todos)
+  const newTodo = {
+    id: searchID, 
+    title: req.body.title, 
+    description: req.body.description, 
+    completed: req.body.completed
   }
 
+  fs.readFile(directory, 'utf-8', (err, data) => {
+    let todos = JSON.parse(data)
+    const findElement = (element) => element.id === searchID
+    const idx = todos.findIndex(findElement)
+
+    if(idx === -1) {
+      return res.status(404).json({
+        msg: 'Todo not found' 
+      })
+    }
+    todos.splice(idx, 1, newTodo)
+    const response = JSON.stringify(todos)
+
+    fs.writeFile(directory, response, (err) => {
+      if(err) throw err;
+    })
+    res.status(200).json(todos)
+  })
 })
 
 app.delete('/todos/:id', (req, res) => {
   const searchID = parseInt(req.params.id)
-  const findElement = (element) => element.id === searchID
+  fs.readFile(directory, 'utf8', (err, data) => {
+    let todos = JSON.parse(data)
 
-  const idx = todos.findIndex(findElement)
-  // console.log(idx);
-  if(idx === -1) {
-    res.status(404).json({
-      msg: 'Todo found and deleted'
-    })
-  }else {
-    todos.splice(idx, 1)
-    // console.log(todos);
-    res.status(200).json({
-      msg: 'Todo not found'
-    })
-  }
+    const findElement = (element) => element.id === searchID
+    const idx = todos.findIndex(findElement)
+
+    if(idx === -1) {
+      res.status(404).json({
+        msg: 'Todo not found'
+      })
+    }else {
+      todos.splice(idx, 1)
+      const data = JSON.stringify(todos)
+      fs.writeFile(directory, data, (err) => {
+        if(err) throw err;      
+        res.status(200).json({
+          msg: 'Todo found and deleted'
+        })
+      })
+    }
+  })
 })
 
 app.use((error, req, res, next) => {
@@ -134,7 +154,12 @@ app.use((error, req, res, next) => {
 
 // app.listen(3000)
 
+
 function updateID() {
+  let todos = []
+  fs.readFileSync(directory, 'utf-8', (err, data) => {
+    todos = JSON.parse(data)
+  })
   if(todos.length === 0) {
     return 1
   }else {
