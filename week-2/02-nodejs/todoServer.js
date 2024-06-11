@@ -39,11 +39,106 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+const todos = [
+  // {id: 1, title: "Grocery", description: "Buy milk curtain", completed: false},
+  // {id: 2, title: "Shopping", description: "Buy a new pair of t-shirt", completed: false},
+  // {id: 3, title: "Shopping", description: "Buy ration", completed: false},
+]
+
+app.get('/todos', (req, res) => {
+  res.status(200).json(todos)
+})
+
+app.get('/todos/:id', (req, res) => {
+  const searchID = parseInt(req.params.id)
+  // console.log(typeof searchID);
+  const item = todos.filter((todo) => todo.id === searchID)
+  // console.log(item);
+
+  if (item.length === 0) {
+    res.status(404).json({})
+  }else {
+    res.status(200).json(item[0])
+  }
+})
+
+app.post('/todos', (req, res) => {
+  const id = updateID()
+  const title = req.body.title
+  const description = req.body.description
+  const completed = req.body.completed
+
+  const todo = {id, title, description, completed}
+  // console.log(todo);
+  todos.push(todo)
+
+  res.status(201).json(todo)
+
+})
+
+app.put('/todos/:id', (req, res) => {
+  const searchID = parseInt(req.params.id)
+  const title = req.body.title
+  const description = req.body.description
+  const completed = req.body.completed
   
-  const app = express();
+  const newTodo = {id: searchID, title, description, completed}
+  console.log(newTodo);
   
-  app.use(bodyParser.json());
-  
-  module.exports = app;
+  const findElement = (element) => element.id === searchID
+  const idx = todos.findIndex(findElement)
+  console.log(idx);
+  if(idx === -1) {
+    res.status(404).json({
+      msg: 'Todo not found'
+    })
+  }else {
+    todos.splice(idx, 1, newTodo)
+    // console.log(todos);
+    res.status(200).json(todos)
+  }
+
+})
+
+app.delete('/todos/:id', (req, res) => {
+  const searchID = parseInt(req.params.id)
+  const findElement = (element) => element.id === searchID
+
+  const idx = todos.findIndex(findElement)
+  // console.log(idx);
+  if(idx === -1) {
+    res.status(404).json({
+      msg: 'Todo found and deleted'
+    })
+  }else {
+    todos.splice(idx, 1)
+    // console.log(todos);
+    res.status(200).json({
+      msg: 'Todo not found'
+    })
+  }
+})
+
+app.use((error, req, res, next) => {
+  res.status(404).json({
+    msg: 'Something wrong happened'
+  })
+})
+
+// app.listen(3000)
+
+function updateID() {
+  if(todos.length === 0) {
+    return 1
+  }else {
+    return todos[todos.length - 1].id + 1
+  }
+}
+module.exports = app;
