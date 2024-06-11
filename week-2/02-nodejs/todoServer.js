@@ -97,7 +97,7 @@ app.put('/todos/:id', (req, res) => {
   console.log(idx);
   if(idx === -1) {
     res.status(404).json({
-      msg: 'Todo not found'
+      msg: 'Todo not found' 
     })
   }else {
     todos.splice(idx, 1, newTodo)
