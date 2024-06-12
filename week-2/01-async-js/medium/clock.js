@@ -14,8 +14,8 @@ function clockWork() {
 
     console.log(clock);
 
-    setTimeout(clockWork, 1000)
+    // setTimeout(clockWork, 1000)
 
 }
-clockWork()
+// clockWork()
 setInterval(clockWork, 1000)
