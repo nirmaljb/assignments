@@ -21,6 +21,8 @@ app.use((err, req, res, next) => {
   
   if(!numberOfRequestsForUser[userID]) {
     numberOfRequestsForUser[userID] = 1
+  }else {
+    numberOfRequestsForUser[userID]++
   }
 
   if(numberOfRequestsForUser[userID] > 5) {
@@ -29,7 +31,6 @@ app.use((err, req, res, next) => {
     })
   }
 
-  numberOfRequestsForUser[userID]++
   next()
 })
 
