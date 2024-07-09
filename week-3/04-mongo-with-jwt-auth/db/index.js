@@ -14,12 +14,14 @@ const UserSchema = new mongoose.Schema({
     // Schema definition here
     username: String,
     password: String,
-    purchasedCoursesID: String
+    purchasedCoursesID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    }]
 });
 
 const CourseSchema = new mongoose.Schema({
     // Schema definition here
-    id: Number,
     title: String,
     description: String,
     price: Number,

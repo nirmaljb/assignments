@@ -18,19 +18,17 @@ setInterval(() => {
 
 app.use((err, req, res, next) => {
   const userID = req.headers['user-id']
-  
-  if(!numberOfRequestsForUser[userID]) {
-    numberOfRequestsForUser[userID] = 1
+
+  if(numberOfRequestsForUser[userID]) {
+    if(numberOfRequestsForUser[userID] >= 5) {
+      return res.status(404).json({
+        msg: 'Too many requests'
+      })
+    }
   }else {
-    numberOfRequestsForUser[userID]++
+    numberOfRequestsForUser[userID] = 1
   }
-
-  if(numberOfRequestsForUser[userID] > 5) {
-    return res.status(404).json({
-      msg: 'Too many requests'
-    })
-  }
-
+  numberOfRequestsForUser[userID]++
   next()
 })
 
