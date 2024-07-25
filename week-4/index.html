@@ -8,15 +8,41 @@
     let oldTodoState = [];
 
     function addTodoToDom() {
-      
+
+      document.getElementById("todos").innerHTML = ""
+
+      for(let i = 0; i < todoState.length; i++) {
+        var newList = document.createElement('li')
+        var newTitle = document.createElement('h1')
+        var newDescription = document.createElement('h3')
+
+        newTitle.textContent = todoState[i].title,
+        newDescription.textContent = todoState[i].description,
+        
+        newList.appendChild(newTitle)
+        newList.appendChild(newDescription)
+  
+  
+        document.getElementById('todos').appendChild(newList)
+      }
+
     }
 
     function removeTodoFromDom(todo) {
-      
+        const filteredTodo = todoState.filter(item => item.id !== todo.id)
+        todoState = filteredTodo
+        addTodoToDom()
     }
 
     function updateTodoInDom(oldTodo, newTodo) {
-        
+        const idx = todoState.findIndex(item => item.id === oldTodo.id)
+        if(idx === -1) {
+          console.log("no element found")
+          return
+        }
+
+        todoState[idx] = newTodo
+        addTodoToDom()
     }
 
     function updateState(newTodos) {
@@ -32,6 +58,8 @@
       // call addTodo, removeTodo, updateTodo functions on each of the
       // elements
       oldTodoState = newTodos;
+
+      addTodoToDom()
     }
 
     function addTodo() {
@@ -53,9 +81,9 @@
   <button onclick="addTodo()">Add todo</button>
   <br /> <br />
 
-  <div id="todos">
+  <ul id="todos">
 
-  </div>
+  </ul>
 </body>
 
 </html>
