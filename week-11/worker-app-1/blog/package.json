@@ -1,0 +1,20 @@
+{
+  "name": "blog",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^6.11.1",
+    "@prisma/client": "^6.11.1",
+    "hono": "^4.8.4",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.4",
+    "dotenv-cli": "^8.0.0",
+    "prisma": "^6.11.1",
+    "wrangler": "^4.4.0"
+  }
+}
