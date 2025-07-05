@@ -18,7 +18,7 @@ datasource db {
 
 model User {
   id Int @id @default(autoincrement())
-  unique_id String @default(uuid())
+  unique_id String @unique @default(uuid())
   username String
   email String @unique
   password String
@@ -27,10 +27,10 @@ model User {
 
 model Blog {
   id Int @id @default(autoincrement())
-  unique_id String @default(uuid())
+  unique_id String @unique @default(uuid())
   title String
   body String
-  authorId Int
-  author User @relation(fields: [authorId], references: [id])
+  authorId String
+  author User @relation(fields: [authorId], references: [unique_id])
   created_at DateTime @default(now())
 }
