@@ -38,4 +38,19 @@ app.post('/', async (c: Context) => {
     }
 });
 
+app.get('/:id', async (c: Context) => {
+    try {
+        const prisma: PrismaClient = c.get('prisma');
+        const param_id = c.req.param('id');
+        const post = await prisma.blog.findUnique({
+            where: {
+                unique_id: param_id
+            }
+        });
+        return c.json({ post });
+    }catch(error) {
+        return c.json({ message: 'Something went wrong', error }, 500);
+    }
+});
+
 export default app;
