@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { type PrismaClient } from "@prisma/client";
 import { type Context, Hono } from "hono";
 import { decode, sign, verify } from 'hono/jwt'
 
@@ -9,8 +9,8 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>();
 
 app.post('/signup', async (c: Context) => {
-    const prisma: PrismaClient = c.get('prisma');
     try {
+        const prisma: PrismaClient = c.get('prisma');
         const { username, email, password } = await c.req.json();
         const user = await prisma.user.create({
             data: {
@@ -27,9 +27,10 @@ app.post('/signup', async (c: Context) => {
 });
 
 app.post('/signin', async (c: Context) => {
-    const prisma: PrismaClient = c.get('prisma');
     try {
+        const prisma: PrismaClient = c.get('prisma');
         const { email, password } = await c.req.json();
+        console.log(email, password);
         const user = await prisma.user.findUnique({
             where: {
                 email: email
