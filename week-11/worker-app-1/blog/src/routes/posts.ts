@@ -69,8 +69,28 @@ app.put('/:id', async (c: Context) => {
                 body
             }
         });
+
+        return c.json({ post });
+
+    }catch(error) {
+        if(error.code == 'P2025') return c.json({ message: 'No post found with that id' });
+        return c.json({ message: 'Something went wrong', error }, 500);
+    }
+});
+
+app.delete('/:id', async (c: Context) => {
+    try {
+        const prisma: PrismaClient = c.get('prisma');
+        const param_id = c.req.param('id');
+        const post = await prisma.blog.delete({
+            where: {
+                unique_id: param_id
+            }
+        });
+
         return c.json({ post });
     }catch(error) {
+        if(error.code == 'P2025') return c.json({ message: 'No post found with that id' });
         return c.json({ message: 'Something went wrong', error }, 500);
     }
 });
