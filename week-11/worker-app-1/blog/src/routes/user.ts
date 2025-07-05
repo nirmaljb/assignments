@@ -8,6 +8,10 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
+app.get('/', (c: Context) => {
+    return c.json({ message: 'Hi from user!' });
+})
+
 app.post('/signup', async (c: Context) => {
     try {
         const prisma: PrismaClient = c.get('prisma');

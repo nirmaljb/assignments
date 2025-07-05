@@ -11,13 +11,13 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>();
 
 app.use('/api/v1/*', prisma());
-// app.use('/api/v1/posts/*', (c, next: Next) => {
-//     const jwtMiddleware = jwt({
-//         secret: c.env.JWT_SECRET
-//     })
+app.use('/api/v1/posts/*', (c, next: Next) => {
+    const jwtMiddleware = jwt({
+        secret: c.env.JWT_SECRET
+    })
 
-//     return jwtMiddleware(c, next)
-// })
+    return jwtMiddleware(c, next)
+})
 
 app.route('api/v1/user', user);
 app.route('api/v1/posts', posts);
