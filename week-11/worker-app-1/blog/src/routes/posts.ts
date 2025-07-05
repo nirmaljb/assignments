@@ -53,4 +53,26 @@ app.get('/:id', async (c: Context) => {
     }
 });
 
+app.put('/:id', async (c: Context) => {
+    try {
+        const prisma: PrismaClient = c.get('prisma');
+        const param_id = c.req.param('id');
+
+        const { title, body } = await c.req.json();
+
+        const post = await prisma.blog.update({
+            where: {
+                unique_id: param_id
+            },
+            data: {
+                title,
+                body
+            }
+        });
+        return c.json({ post });
+    }catch(error) {
+        return c.json({ message: 'Something went wrong', error }, 500);
+    }
+});
+
 export default app;
